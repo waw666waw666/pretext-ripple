@@ -1,5 +1,5 @@
-const AMPLITUDE = 3;
-const SPEED = 0.4;
+const AMPLITUDE = 0.5;
+const SPEED = 0.25;
 const PHASE_OFFSET = 0.8;
 
 export function getSwayOffset(time: number, lineIndex: number): number {

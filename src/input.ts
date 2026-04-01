@@ -1,94 +1,92 @@
-import { addRipple } from "./ripple";
+import { dropAt, DRAG_STRENGTH } from "./ripple";
+import { playBowl, playDragTone } from "./audio";
 
-const MIN_AMPLITUDE = 3;
-const MAX_AMPLITUDE = 20;
-const MAX_DURATION_MS = 1000;
+const DROP_BASE = undefined; // uses default DROP_STRENGTH
+const DRAG_INTERVAL = 30; // ms between drops while dragging
+const DRAG_SOUND_INTERVAL = 120; // ms between drag tones
 
-interface PendingTouch {
-  startTime: number;
-  x: number;
-  y: number;
-  force: number | null;
-}
-
-const pendingTouches = new Map<number, PendingTouch>();
-
-export function setupInput(canvas: HTMLCanvasElement, getTime: () => number): void {
-  const dpr = window.devicePixelRatio || 1;
-
+export function setupInput(canvas: HTMLCanvasElement, _getTime: () => number): void {
   function canvasCoords(clientX: number, clientY: number): { x: number; y: number } {
     const rect = canvas.getBoundingClientRect();
     return {
-      x: (clientX - rect.left),
-      y: (clientY - rect.top),
+      x: clientX - rect.left,
+      y: clientY - rect.top,
     };
   }
 
-  function amplitudeFromDuration(durationMs: number): number {
-    const t = Math.min(durationMs / MAX_DURATION_MS, 1);
-    return MIN_AMPLITUDE + t * (MAX_AMPLITUDE - MIN_AMPLITUDE);
-  }
+  const lastDropTime = new Map<number, number>();
+  let lastDragSound = 0;
 
-  function amplitudeFromForce(force: number): number {
-    return MIN_AMPLITUDE + force * (MAX_AMPLITUDE - MIN_AMPLITUDE);
-  }
-
-  // Touch events
   canvas.addEventListener("touchstart", (e) => {
     e.preventDefault();
+    const now = performance.now();
     for (let i = 0; i < e.changedTouches.length; i++) {
       const touch = e.changedTouches[i];
       const coords = canvasCoords(touch.clientX, touch.clientY);
-      pendingTouches.set(touch.identifier, {
-        startTime: performance.now(),
-        x: coords.x,
-        y: coords.y,
-        force: touch.force > 0 ? touch.force : null,
-      });
+      const strength = touch.force > 0 ? 200 + touch.force * 200 : DROP_BASE;
+      dropAt(coords.x, coords.y, strength);
+      const yNorm = coords.y / window.innerHeight;
+      playBowl(touch.force > 0 ? 0.5 + touch.force : 1, yNorm);
+      lastDropTime.set(touch.identifier, now);
+    }
+  }, { passive: false });
+
+  canvas.addEventListener("touchmove", (e) => {
+    e.preventDefault();
+    const now = performance.now();
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const touch = e.changedTouches[i];
+      const last = lastDropTime.get(touch.identifier) || 0;
+      if (now - last < DRAG_INTERVAL) continue;
+      const coords = canvasCoords(touch.clientX, touch.clientY);
+      dropAt(coords.x, coords.y, DRAG_STRENGTH);
+      if (now - lastDragSound > DRAG_SOUND_INTERVAL) {
+        const yNorm = coords.y / window.innerHeight;
+        playDragTone(yNorm);
+        lastDragSound = now;
+      }
+      lastDropTime.set(touch.identifier, now);
     }
   }, { passive: false });
 
   canvas.addEventListener("touchend", (e) => {
-    e.preventDefault();
-    const time = getTime();
     for (let i = 0; i < e.changedTouches.length; i++) {
-      const touch = e.changedTouches[i];
-      const pending = pendingTouches.get(touch.identifier);
-      if (!pending) continue;
-
-      let amplitude: number;
-      if (pending.force !== null) {
-        amplitude = amplitudeFromForce(pending.force);
-      } else {
-        const durationMs = performance.now() - pending.startTime;
-        amplitude = amplitudeFromDuration(durationMs);
-      }
-
-      addRipple(pending.x, pending.y, amplitude, time);
-      pendingTouches.delete(touch.identifier);
+      lastDropTime.delete(e.changedTouches[i].identifier);
     }
-  }, { passive: false });
+  });
 
   canvas.addEventListener("touchcancel", (e) => {
     for (let i = 0; i < e.changedTouches.length; i++) {
-      pendingTouches.delete(e.changedTouches[i].identifier);
+      lastDropTime.delete(e.changedTouches[i].identifier);
     }
   });
 
-  // Mouse events (desktop fallback)
-  let mouseDown: { startTime: number; x: number; y: number } | null = null;
+  let mouseIsDown = false;
+  let mouseLastDrop = 0;
 
   canvas.addEventListener("mousedown", (e) => {
+    mouseIsDown = true;
     const coords = canvasCoords(e.clientX, e.clientY);
-    mouseDown = { startTime: performance.now(), x: coords.x, y: coords.y };
+    dropAt(coords.x, coords.y);
+    const yNorm = coords.y / window.innerHeight;
+    playBowl(1, yNorm);
+    mouseLastDrop = performance.now();
   });
 
-  canvas.addEventListener("mouseup", (e) => {
-    if (!mouseDown) return;
-    const time = getTime();
-    const durationMs = performance.now() - mouseDown.startTime;
-    const amplitude = amplitudeFromDuration(durationMs);
-    addRipple(mouseDown.x, mouseDown.y, amplitude, time);
-    mouseDown = null;
+  canvas.addEventListener("mousemove", (e) => {
+    if (!mouseIsDown) return;
+    const now = performance.now();
+    if (now - mouseLastDrop < DRAG_INTERVAL) return;
+    const coords = canvasCoords(e.clientX, e.clientY);
+    dropAt(coords.x, coords.y, DRAG_STRENGTH);
+    if (now - lastDragSound > DRAG_SOUND_INTERVAL) {
+      const yNorm = coords.y / window.innerHeight;
+      playDragTone(yNorm);
+      lastDragSound = now;
+    }
+    mouseLastDrop = now;
   });
+
+  canvas.addEventListener("mouseup", () => { mouseIsDown = false; });
+  canvas.addEventListener("mouseleave", () => { mouseIsDown = false; });
 }
