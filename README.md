@@ -13,7 +13,7 @@
 
 ## ✨ 效果预览
 
-![Pretext Ripple 演示](./docs/demo.gif)
+![Pretext Ripple 演示](https://github.com/waw666waw666/pretext-ripple/raw/main/docs/demo.gif)
 
 在文字表面轻触或滑动，即可产生逼真的水波纹效果，配合空灵的颂钵音效，带来沉浸式的交互体验。
 
@@ -159,7 +159,7 @@ src/
 - [ ] 音效开关控制
 - [ ] 波纹强度调节
 - [ ] 主题颜色切换
-- [ ] 项目截图/GIF
+- [x] 项目截图/GIF
 
 ---
 
