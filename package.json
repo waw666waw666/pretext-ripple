@@ -1,10 +1,33 @@
 {
   "name": "pretext-ripple",
+  "version": "1.0.0",
+  "description": "文字水波纹交互动画 - 基于 2D 离散波动方程的沉浸式文本体验",
   "private": true,
   "type": "module",
+  "author": "Pretext Ripple",
+  "license": "MIT",
+  "homepage": "https://github.com/liangchaofu/pretext-ripple#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liangchaofu/pretext-ripple.git"
+  },
+  "bugs": {
+    "url": "https://github.com/liangchaofu/pretext-ripple/issues"
+  },
+  "keywords": [
+    "water-ripple",
+    "canvas",
+    "animation",
+    "typescript",
+    "interactive",
+    "text-effect",
+    "wave-equation",
+    "physics-simulation"
+  ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@chenglou/pretext": "^0.0.3"
