@@ -1,96 +1,105 @@
 # 🌊 Pretext Ripple
 
-[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen)](https://waw666waw666.github.io/pretext-ripple/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.0-purple)](https://vitejs.dev/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-brightgreen?style=flat-square&logo=github)](https://waw666waw666.github.io/pretext-ripple/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-> 沉浸式文字水波纹交互体验
+> 沉浸式文字水波纹交互体验 —— 让文字像水面一样流动
 
-Pretext Ripple 是一个基于 Canvas 的交互式文字展示项目，将文本以"水下文字"的形式呈现，用户通过触摸或鼠标交互在文字表面产生逼真的水波纹效果。
+[🚀 在线体验](https://waw666waw666.github.io/pretext-ripple/) · [📦 源码](https://github.com/waw666waw666/pretext-ripple) · [🐛 问题反馈](https://github.com/waw666waw666/pretext-ripple/issues)
 
-## ✨ 特性
+---
 
-- 🎨 **沉浸式视觉体验** - 深色主题配合淡蓝色调，模拟水下光线折射效果
-- 💧 **物理真实感** - 基于 2D 离散波动方程的水波纹模拟
-- 🎵 **音频反馈** - Web Audio API 合成的颂钵冥想音效
-- 📱 **响应式设计** - 自适应不同屏幕尺寸
-- ⚡ **高性能渲染** - 视口裁剪优化，支持 60fps 流畅运行
-- 🎛️ **自定义配置** - 支持自定义文本和字体大小调整
+## ✨ 效果预览
 
-## 🚀 在线演示
+在文字表面轻触或滑动，即可产生逼真的水波纹效果，配合空灵的颂钵音效，带来沉浸式的交互体验。
 
-**[点击体验 →](https://waw666waw666.github.io/pretext-ripple/)**
+> 💡 **提示**: 推荐使用耳机以获得最佳音效体验
 
-## 📦 技术栈
+---
 
-- **语言**: TypeScript
-- **构建工具**: Vite 6.x
-- **核心依赖**: [@chenglou/pretext](https://github.com/chenglou/pretext) - 智能文本排版引擎
-- **部署**: GitHub Pages
+## 🎯 核心特性
 
-## 🛠️ 本地开发
+| 特性 | 说明 |
+|------|------|
+| 🎨 **沉浸式视觉** | 深色主题配合淡蓝光线，模拟水下折射效果 |
+| 💧 **物理模拟** | 基于 2D 离散波动方程的真实水波纹计算 |
+| 🎵 **空间音效** | Web Audio API 合成颂钵音色 + 卷积混响 |
+| 📱 **全端适配** | 响应式设计，支持桌面和移动设备 |
+| ⚡ **高性能** | 60fps 流畅运行，视口裁剪优化 |
+| 🎛️ **自由定制** | 自定义文本内容、字体大小智能适配 |
 
-### 安装依赖
+---
+
+## 🚀 快速开始
+
+### 在线体验
+
+无需安装，直接访问：
+
+**👉 https://waw666waw666.github.io/pretext-ripple/**
+
+### 本地运行
 
 ```bash
+# 克隆仓库
+git clone https://github.com/waw666waw666/pretext-ripple.git
+cd pretext-ripple
+
+# 安装依赖
 npm install
-```
 
-### 启动开发服务器
-
-```bash
+# 启动开发服务器
 npm run dev
-```
 
-### 构建生产版本
-
-```bash
+# 构建生产版本
 npm run build
 ```
 
-## 🎮 使用方法
+---
 
-1. **交互产生波纹** - 在屏幕上触摸或点击拖动
-2. **自定义文本** - 点击右上角 ✎ 按钮，输入自定义内容
-3. **调整字体大小** - 使用滑块调整字体大小（5px - 20px）
-4. **智能适配** - 点击"🎯 智能适配"自动计算最佳字体大小
+## 🎮 使用指南
 
-## 📝 配置说明
+### 基础交互
 
-### 文本限制
+| 操作 | 效果 |
+|------|------|
+| 🖱️ **鼠标移动/点击** | 在文字表面产生水波纹 |
+| 📱 **触摸滑动** | 移动端同样支持波纹效果 |
+| ✨ **自动波纹** | 随机位置自动生成涟漪 |
 
-- 最大输入长度: 5000 字符
-- 最大渲染字符: 50000 字符（支持重复填满屏幕）
+### 自定义设置
 
-### 字体大小
+点击右上角的 **✎ 编辑按钮** 打开控制面板：
 
-- 范围: 5px - 20px
-- 默认: 7px
-- 动画效果会根据字体大小自动调整，确保视觉一致性
+1. **📝 自定义文本** - 输入任意内容（支持 5000 字符）
+2. **🔤 调整字体** - 滑块控制 5px ~ 20px
+3. **🎯 智能适配** - 一键计算最佳字体大小填满屏幕
 
-## 🏗️ 项目结构
+---
+
+## 🏗️ 技术架构
+
+### 项目结构
 
 ```
-pretext-ripple/
-├── src/
-│   ├── main.ts          # 程序入口
-│   ├── text.ts          # 文本处理与字符映射
-│   ├── ripple.ts        # 2D波动方程物理模拟
-│   ├── renderer.ts      # Canvas渲染引擎
-│   ├── input.ts         # 触摸/鼠标输入处理
-│   ├── audio.ts         # Web Audio API音效系统
-│   ├── sway.ts          # 文字摇摆动画
-│   ├── entrance.ts      # 入场渐显动画
-│   ├── gyro.ts          # 陀螺仪支持（预留）
-│   └── ui.ts            # UI控制面板
-├── index.html           # 页面模板
-├── vite.config.ts       # Vite配置
-└── .github/workflows/   # GitHub Actions部署
+src/
+├── main.ts          # 程序入口，模块协调
+├── text.ts          # 文本处理、字符映射、重复填充
+├── ripple.ts        # 2D波动方程物理引擎
+├── renderer.ts      # Canvas渲染、动画循环
+├── input.ts         # 鼠标/触摸事件处理
+├── audio.ts         # Web Audio API音效合成
+├── sway.ts          # 文字摇摆动画
+├── entrance.ts      # 入场渐显动画
+├── gyro.ts          # 陀螺仪支持（预留）
+└── ui.ts            # UI控制面板交互
 ```
 
-## 🔬 技术亮点
+### 核心技术
 
-### 水波纹物理模拟
+#### 1. 水波纹物理引擎
 
 基于离散化二维波动方程：
 
@@ -98,31 +107,90 @@ pretext-ripple/
 ∂²u/∂t² = c²∇²u - γ∂u/∂t
 ```
 
-- 双缓冲技术交替计算
-- 阻尼系数 0.95 实现能量耗散
-- 余弦衰减实现平滑波源
+实现细节：
+- **双缓冲技术** - 交替计算当前帧和下一帧
+- **阻尼系数 0.95** - 模拟能量自然耗散
+- **余弦衰减** - 波源扩散更平滑自然
 
-### 音频合成
+#### 2. 音频合成系统
 
-- **加法合成**: 基频 + 2.71x + 4.16x 泛音模拟金属钵音色
-- **D大调五声音阶**: 19 个音符从 D2 到 A5
-- **卷积混响**: 5 秒长混响营造空间感
+| 参数 | 配置 |
+|------|------|
+| 合成方式 | 加法合成 |
+| 泛音比例 | 基频 + 2.71x + 4.16x |
+| 音阶 | D大调五声音阶（D2 ~ A5，共19音）|
+| 混响 | 5秒卷积混响，营造空间感 |
 
-### 性能优化
+#### 3. 性能优化策略
 
-- 视口裁剪（Culling）- 只渲染屏幕内字符
-- 智能文本重复 - 根据屏幕高度计算重复次数
-- 防抖更新 - 避免频繁重建字符映射
-
-## 📄 许可证
-
-[MIT](LICENSE)
-
-## 🙏 致谢
-
-- 默认文本来自刘慈欣科幻小说《三体》
-- 音频设计灵感来自颂钵冥想音乐
+- ✅ **视口裁剪** - 仅渲染屏幕可见字符
+- ✅ **智能重复** - 根据屏幕高度自动计算文本重复次数
+- ✅ **防抖更新** - 避免频繁重建字符映射表
+- ✅ **对数动画曲线** - 大字体下保持动画一致性
 
 ---
 
-Made with 💙 by [waw666waw666](https://github.com/waw666waw666)
+## ⚙️ 配置参数
+
+### 文本限制
+
+| 参数 | 值 | 说明 |
+|------|-----|------|
+| `MAX_TEXT_LENGTH` | 5000 | 用户输入最大长度 |
+| `MAX_CHARS_RENDER` | 50000 | 渲染字符上限（含重复填充）|
+| `PADDING` | 20px | 文字边距 |
+
+### 字体设置
+
+| 参数 | 范围 | 默认值 |
+|------|------|--------|
+| 字体大小 | 5px ~ 20px | 7px |
+| 行高 | 1.5em | - |
+| 字间距 | 0.05em | - |
+
+---
+
+## 🛠️ 开发计划
+
+- [ ] 移动端触摸优化
+- [ ] 添加更多预设文本
+- [ ] 音效开关控制
+- [ ] 波纹强度调节
+- [ ] 主题颜色切换
+- [ ] 项目截图/GIF
+
+---
+
+## 🤝 参与贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+1. Fork 本仓库
+2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送分支 (`git push origin feature/AmazingFeature`)
+5. 创建 Pull Request
+
+---
+
+## 📄 许可证
+
+本项目基于 [MIT](LICENSE) 许可证开源。
+
+---
+
+## 🙏 致谢
+
+- 默认文本节选自刘慈欣科幻小说《三体》
+- 音频设计灵感源自颂钵冥想音乐
+- 波纹算法参考经典 2D Wave Equation 实现
+
+---
+
+<p align="center">
+  Made with 💙 by <a href="https://github.com/waw666waw666">waw666waw666</a>
+</p>
+
+<p align="center">
+  <a href="https://waw666waw666.github.io/pretext-ripple/">🌊 体验水波纹魔法</a>
+</p>
