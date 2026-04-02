@@ -1,11 +1,158 @@
 import { prepareWithSegments, layoutWithLines } from "@chenglou/pretext";
 
-const BASE_TEXT = `I don't know what the heck is going on. I woke up and I'm in some kind of room. A hospital room, I think. There are two dead bodies in here with me. The room is white and clean and has a lot of equipment I don't recognize. I'm in a bed that seems to be mounted to the wall. Everything is bolted down really well. Like, really well. I have an IV in my arm and I ache all over. My head hurts. My everything hurts. There's a little robot arm near my bed with a mechanical claw on the end. It holds a cup of water. I'm extremely thirsty. I drink the water. The robot retracts. What is this place? I try to remember how I got here but I can't. I don't even know who I am. I don't know my name. I don't know my job. I don't know anything. The only thing I know is science. For some reason I know a lot of science. I lie in bed for a long time. The little robot arm comes back now and then with food. It's a paste that tastes like bread. My muscles are very weak. So weak I can barely move. Something is very wrong with me. But I'm alive. That's something. The two bodies in the room with me are not so lucky. They are very dead. They are strapped into beds just like mine. I wonder who they were. I wonder who I am. I spend the next few days in a haze. I sleep. I wake. I eat the paste. I drink water from the robot. I try to move my arms and legs but they're like jelly. Gradually, I start to piece things together. My name is Ryland Grace. I'm a teacher. No, wait. I was a teacher. Junior high school science. I remember that much. I remember my classroom. I remember the kids. I remember loving my job. But how did I get here? And where is here? The room has no windows. There's a door, but it's sealed shut. The two dead people don't provide any useful information, on account of being dead. The little robot arm is my only companion. It's attached to a sophisticated mechanism on the wall. It brings me food and water at regular intervals. It also takes my blood pressure and temperature. Sometimes it gives me shots. I don't know what's in them but I feel a little better each day. My muscles are slowly coming back. I can sit up now. I can swing my legs over the side of the bed. Progress. I notice the room is very well designed. Everything is mounted to the walls or floor. There are no loose objects anywhere. The beds are solid and sturdy, bolted into the wall. The equipment around the room is similarly secured. It's like someone expected this room to be in unusual conditions. Zero gravity, maybe? That thought sticks with me. Why would a hospital room be designed for zero gravity? I look around more carefully now that I can sit up. The walls are covered in a soft material, almost like padding. There are small hatches and compartments everywhere, all sealed with latches that look like they could handle serious force. The lighting comes from panels in the ceiling that give off a warm, steady glow. No flickering, no buzzing. Very high quality. The air smells clean, almost sterile, but with a faint metallic undertone. The temperature is perfect. Not too warm, not too cold. Whoever built this place spent a lot of money on it. The equipment around me is advanced. Way more advanced than anything I've seen in a hospital. Some of it I can identify. Heart monitors, IV pumps, ventilators. But others are completely foreign to me. Sleek machines with smooth surfaces and no visible controls. They hum quietly. The two dead people bother me. Not in a scared way, but in a curious way. They're wearing the same kind of jumpsuit I am. Light gray, comfortable, with a small patch on the chest. I can't read the patch from my bed. They look peaceful. Like they just went to sleep and never woke up. I wonder what happened to them. I wonder if the same thing almost happened to me.`;
-export const EXCERPT = BASE_TEXT + " " + BASE_TEXT + " " + BASE_TEXT;
+const DEFAULT_TEXT = `The sun had set long ago, and the sky was now a deep shade of purple. Wang Miao stood at the window of his apartment, staring out at the city lights below. He couldn't shake the feeling that something was fundamentally wrong with the world. The countdown had appeared in his vision again, hovering at the edge of his consciousness like a persistent ghost. Four hundred and thirty hours, seventeen minutes, and thirty-three seconds remaining. He had tried to ignore it, to go about his daily life as a nanomaterials researcher, but the numbers followed him everywhere. His colleagues at the lab had noticed his distraction, his inability to focus on the superconducting materials project. Dr. Ding had asked if he was feeling ill, if he needed time off. But how could he explain that he was seeing a countdown that no one else could see? The game had started it all. Three Body, the mysterious virtual reality simulation that had consumed his evenings for weeks. He had put on the V-suit and entered that strange world with its three suns and chaotic climate. The civilizations that rose and fell, again and again, trying to predict the unpredictable motion of those burning stars. He had met people there, learned things that seemed impossible. Now the boundary between that virtual world and his reality was blurring. The countdown was proof of that. Someone was watching him, manipulating him, but he didn't know who or why. The police had shown up at his door yesterday, asking questions about a scientist who had committed suicide. Yang Dong, a brilliant physicist who had been working on the particle accelerator project. Her death didn't make sense, just like so many other recent suicides in the scientific community. Something was targeting them, hunting them down one by one. Wang checked his phone again, hoping for a message that would explain everything. Nothing. He thought about the strange woman he had met, the one who called herself the countdown terminator. She had shown him the universe flickering, the cosmic microwave background radiation dancing in patterns that shouldn't exist. Physics was broken, she had said. The fundamental laws that governed reality were being manipulated by forces beyond human comprehension. He wanted to dismiss it all as madness, but the evidence was undeniable. The stars themselves were sending messages, blinking in Morse code across the night sky. Someone was answering humanity's attempts to explore the universe, and their message was clear: stop, or face destruction. The countdown continued its relentless march toward zero, and Wang Miao had no idea what would happen when it reached its end.`;
 
-export const FONT = "7px Georgia";
-export const LINE_HEIGHT = 11;
-export const PADDING = -40;
+const STORAGE_KEY = "pretext-ripple-custom-text";
+const FONT_SIZE_KEY = "pretext-ripple-font-size";
+
+// 性能限制参数
+export const MAX_TEXT_LENGTH = 5000; // 最大文本长度（字符数）
+export const MAX_CHARS_RENDER = 50000; // 最大渲染字符数（支持长文本重复填满屏幕）
+
+// 字体大小配置
+export const MIN_FONT_SIZE = 5;
+export const MAX_FONT_SIZE = 20;
+export const DEFAULT_FONT_SIZE = 7;
+
+/**
+ * 计算推荐的字体大小
+ * 根据文本长度和屏幕尺寸计算最佳字体大小，确保文本完整显示
+ */
+export function calculateRecommendedFontSize(
+  textLength: number,
+  canvasWidth: number,
+  canvasHeight: number
+): number {
+  // 估算每行可容纳的字符数（基于平均字符宽度）
+  const avgCharWidth = 0.6; // 7px字体下平均字符宽度约为4.2px
+  const padding = 80; // 左右边距总和
+  const availableWidth = canvasWidth - padding;
+
+  // 估算每行字符数和总行数
+  const charsPerLine = Math.floor(availableWidth / (DEFAULT_FONT_SIZE * avgCharWidth));
+  const totalLines = Math.ceil(textLength / charsPerLine);
+
+  // 计算需要的行高来填满屏幕
+  const targetLineHeight = canvasHeight / totalLines;
+
+  // 根据行高反推字体大小（行高 = 字体大小 * 1.57）
+  let recommendedSize = Math.floor(targetLineHeight / 1.57);
+
+  // 限制在有效范围内
+  recommendedSize = Math.max(MIN_FONT_SIZE, Math.min(MAX_FONT_SIZE, recommendedSize));
+
+  return recommendedSize;
+}
+
+/**
+ * 获取字体大小建议
+ * 根据当前文本和屏幕尺寸给出建议
+ */
+export function getFontSizeRecommendation(
+  text: string,
+  canvasWidth: number,
+  canvasHeight: number
+): { size: number; reason: string } {
+  const textLength = text.length;
+  const recommended = calculateRecommendedFontSize(textLength, canvasWidth, canvasHeight);
+
+  let reason = "";
+  if (recommended <= MIN_FONT_SIZE) {
+    reason = "文本较长，已使用最小字体以确保完整显示";
+  } else if (recommended >= MAX_FONT_SIZE) {
+    reason = "文本较短，已使用最大字体以填满屏幕";
+  } else {
+    reason = `根据文本长度(${textLength}字符)和屏幕尺寸推荐`;
+  }
+
+  return { size: recommended, reason };
+}
+
+/** 获取当前字体大小 */
+export function getFontSize(): number {
+  if (typeof window === "undefined") return DEFAULT_FONT_SIZE;
+  const saved = localStorage.getItem(FONT_SIZE_KEY);
+  return saved ? parseInt(saved, 10) : DEFAULT_FONT_SIZE;
+}
+
+/** 保存字体大小 */
+export function saveFontSize(size: number): void {
+  if (typeof window === "undefined") return;
+  const clamped = Math.max(MIN_FONT_SIZE, Math.min(MAX_FONT_SIZE, size));
+  localStorage.setItem(FONT_SIZE_KEY, clamped.toString());
+}
+
+/** 生成字体样式字符串 */
+export function getFontStyle(size?: number): string {
+  const fontSize = size ?? getFontSize();
+  return `${fontSize}px Georgia`;
+}
+
+/** 根据字体大小计算行高 */
+export function getLineHeight(fontSize?: number): number {
+  const size = fontSize ?? getFontSize();
+  return Math.ceil(size * 1.57); // 7px字体对应11px行高，保持比例
+}
+
+/** 获取当前使用的文本内容 */
+export function getCurrentText(): string {
+  if (typeof window === "undefined") return DEFAULT_TEXT;
+  const saved = localStorage.getItem(STORAGE_KEY);
+  return saved || DEFAULT_TEXT;
+}
+
+/** 保存自定义文本 */
+export function saveCustomText(text: string): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, text);
+}
+
+/** 重置为默认文本 */
+export function resetToDefault(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+/** 检查是否使用了自定义文本 */
+export function hasCustomText(): boolean {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(STORAGE_KEY) !== null;
+}
+
+/** 截断文本至最大长度 */
+export function truncateText(text: string, maxLength: number = MAX_TEXT_LENGTH): string {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength) + "...";
+}
+
+/** 生成用于显示的文本（根据字体大小智能重复填满屏幕） */
+export function generateExcerpt(text: string, canvasHeight: number = 1080, lineHeight?: number): string {
+  const lh = lineHeight ?? getLineHeight();
+  // 计算需要多少行才能填满屏幕（至少一屏）
+  const targetLines = Math.max(1, Math.ceil(canvasHeight / lh));
+  const avgCharsPerLine = 80; // 估算每行平均字符数
+  const targetChars = targetLines * avgCharsPerLine;
+
+  let result = text;
+  // 智能重复：重复足够次数填满整个屏幕
+  while (result.length < targetChars && result.length < MAX_CHARS_RENDER) {
+    const newResult = result + " " + text;
+    if (newResult.length > MAX_CHARS_RENDER) break;
+    result = newResult;
+  }
+
+  return result;
+}
+
+/** 获取当前用于显示的文本 */
+export function getExcerpt(): string {
+  return generateExcerpt(getCurrentText());
+}
+
+// 动态获取字体和行高
+export const FONT = getFontStyle();
+export const LINE_HEIGHT = getLineHeight();
+export const PADDING = 20; // 改为正值，确保文本在可视区域内
 
 export interface CharEntry {
   char: string;
@@ -16,13 +163,23 @@ export interface CharEntry {
 
 export function buildCharMap(
   ctx: CanvasRenderingContext2D,
-  canvasWidth: number
+  canvasWidth: number,
+  canvasHeight: number = 1080,
+  text?: string,
+  fontSize?: number
 ): CharEntry[] {
   const maxWidth = canvasWidth - PADDING * 2;
-  ctx.font = FONT;
+  const fontStyle = getFontStyle(fontSize);
+  const lineHeight = getLineHeight(fontSize);
+  ctx.font = fontStyle;
 
-  const prepared = prepareWithSegments(EXCERPT, FONT);
-  const { lines } = layoutWithLines(prepared, maxWidth, LINE_HEIGHT);
+  // 截断过长文本并生成智能重复
+  const rawText = text || getCurrentText();
+  const truncated = truncateText(rawText);
+  const excerpt = generateExcerpt(truncated, canvasHeight, lineHeight);
+
+  const prepared = prepareWithSegments(excerpt, fontStyle);
+  const { lines } = layoutWithLines(prepared, maxWidth, lineHeight);
 
   const charMap: CharEntry[] = [];
 
@@ -56,7 +213,7 @@ export function buildCharMap(
       charMap.push({
         char: lineText[i],
         x: PADDING + cursorX,
-        y: PADDING + lineIndex * LINE_HEIGHT,
+        y: PADDING + lineIndex * lineHeight,
         lineIndex,
       });
 
